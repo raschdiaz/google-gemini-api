@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Google Gemini API</title>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <h1>Google Gemini API</h1>
+    <form method="post" onsubmit="return handleSubmit(this);">
+        <label for="question">Pregunta:</label>
+        <input type="text" name="question" />
+        <button type="submit">Enviar</button>
+    </form>
+    <p id="response"></p>
+    <script type="text/javascript">
+
+        var geminiLoaded = false;
+
+        function loadScriptSync(src, callback) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.type = "text/javascript";
+            script.async = true;
+            script.defer = true;
+            script.onload = callback;
+            document.getElementsByTagName('body')[0].appendChild(script);
+        }
+
+        async function loadEnvironment() {
+            const response = await fetch("./environment.json");
+            return await response.json();
+        }
+
+        // Load environment variables and logic synchronously
+        loadEnvironment().then((environment) => {
+            window.environment = environment;
+            loadScriptSync("index.js", function () {
+                geminiLoaded = true;
+            });
+        });
+
+        function handleSubmit(form) {
+            // Prevent default form submission
+            event.preventDefault();
+
+            // Access form data (e.g., using FormData API)
+            const formData = new FormData(form);
+
+            console.log(formData);
+
+            if(geminiLoaded) {
+                gemini25Pro(formData.get("question"));
+            }
+
+            return false; // Prevent default form submission
+        }
+
+    </script>
+</body>
+
+</html>
