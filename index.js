@@ -13,11 +13,19 @@ async function getModelsList() {
     });
     const data = await response.json();
     console.log(data);
+    select = document.getElementById('model');
+    data['models'].forEach(model => {
+        var opt = document.createElement('option');
+        opt.value = model['name'];
+        opt.innerHTML = model['name'];
+        select.appendChild(opt);
+    });
+    document.getElementById("submit").disabled = false;
 }
 
-async function gemini25Pro(question) {
+async function gemini25Pro(model, question) {
     const API_KEY = environment.API_KEY;
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model}:generateContent`, {
         method: 'POST',
         headers: {
             'x-goog-api-key': API_KEY,
@@ -38,6 +46,8 @@ async function gemini25Pro(question) {
     const data = await response.json();
     console.log(data);
     document.getElementById("response").innerHTML = data.candidates[0].content.parts[0].text;
+    document.getElementById("submit").innerHTML = "Enviar";
+    document.getElementById("submit").disabled = false;
 }
 
 //callGeminiApiDirectly();

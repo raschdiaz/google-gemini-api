@@ -9,13 +9,18 @@
 <body>
     <h1>Google Gemini API</h1>
     <form method="post" onsubmit="return handleSubmit(this);">
+        <label for="model">Modelo:</label>
+        <select id="model" name="model"></select>
+        </br>
         <label for="question">Pregunta:</label>
-        <input type="text" name="question" />
-        <button type="submit">Enviar</button>
+        <input type="textarea" name="question" size="50" />
+        </br>
+        <button id="submit" type="submit">Enviar</button>
     </form>
     <p id="response"></p>
     <script type="text/javascript">
-
+        
+        document.getElementById("submit").disabled = true;
         var geminiLoaded = false;
 
         function loadScriptSync(src, callback) {
@@ -38,20 +43,22 @@
             window.environment = environment;
             loadScriptSync("index.js", function () {
                 geminiLoaded = true;
+                getModelsList();
             });
         });
 
         function handleSubmit(form) {
             // Prevent default form submission
             event.preventDefault();
-
+            document.getElementById("submit").innerHTML = "Enviando...";
+            document.getElementById("submit").disabled = true;
             // Access form data (e.g., using FormData API)
             const formData = new FormData(form);
 
             console.log(formData);
 
-            if(geminiLoaded) {
-                gemini25Pro(formData.get("question"));
+            if (geminiLoaded) {
+                gemini25Pro(formData.get("model"), formData.get("question"));
             }
 
             return false; // Prevent default form submission
