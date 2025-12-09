@@ -21,6 +21,7 @@ async function getModelsList() {
         select.appendChild(opt);
     });
     document.getElementById("submit").disabled = false;
+    select.value = "models/gemini-2.5-flash";
 }
 
 async function gemini25Pro(model, question, fileBase64 = null, fileMimeType = null) {
