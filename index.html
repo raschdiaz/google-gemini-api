@@ -16,7 +16,8 @@
         <input type="textarea" name="question" size="50" />
         </br>
         <label for="file">Archivo:</label>
-        <input type="file" name="file" />
+        <input type="file" name="file" id="file" />
+        <button type="button" id="clear" onclick="clearFileField()">Remover Archivo</button>
         </br>
         <button id="submit" type="submit">Enviar</button>
     </form>
@@ -25,6 +26,7 @@
 
         document.getElementById("submit").disabled = true;
         var geminiLoaded = false;
+        clearFileField();
 
         function loadScriptSync(src, callback) {
             var script = document.createElement('script');
@@ -63,7 +65,7 @@
             const file = formData.get("file");
             console.log(file);
 
-            if (file) {
+            if (file.size > 0) {
                 // Create a new FileReader instance
                 const reader = new FileReader();
 
@@ -103,6 +105,10 @@
             }
 
             return false; // Prevent default form submission
+        }
+
+        function clearFileField() {
+            document.getElementById('file').value = null;
         }
 
     </script>
