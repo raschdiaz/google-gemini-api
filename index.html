@@ -15,11 +15,14 @@
         <label for="question">Pregunta:</label>
         <input type="textarea" name="question" size="50" />
         </br>
+        <label for="file">Archivo:</label>
+        <input type="file" name="file" />
+        </br>
         <button id="submit" type="submit">Enviar</button>
     </form>
     <p id="response"></p>
     <script type="text/javascript">
-        
+
         document.getElementById("submit").disabled = true;
         var geminiLoaded = false;
 
@@ -57,8 +60,46 @@
 
             console.log(formData);
 
-            if (geminiLoaded) {
-                gemini25Pro(formData.get("model"), formData.get("question"));
+            const file = formData.get("file");
+            console.log(file);
+
+            if (file) {
+                // Create a new FileReader instance
+                const reader = new FileReader();
+
+                // Define what happens when the file is finished loading
+                reader.onload = function (e) {
+                    // The result is a Data URL (e.g., "data:image/png;base64,iVBORw...")
+                    const dataURL = e.target.result;
+                    console.log("Data URL:", dataURL);
+                    const mimeType = dataURL.match(/^data:(.+);base64,/)[1];
+                    console.log("mimeType", mimeType);
+                    // Optionally, remove the "data:type;base64," prefix to get only the raw Base64 string
+                    const base64String = dataURL.replace(/^data:.+;base64,/, '');
+
+                    // Display the result
+                    //base64Output.value = base64String;
+                    console.log("Full Data URL:", dataURL);
+                    console.log("Raw Base64 String:", base64String);
+
+                    if (geminiLoaded) {
+                        gemini25Pro(formData.get("model"), formData.get("question"), base64String, mimeType);
+                    }
+                };
+
+                // Define what happens if an error occurs
+                reader.onerror = function (error) {
+                    console.error("Error reading file:", error);
+                };
+
+                // Read the file's content as a Data URL, which internally Base64 encodes it
+                reader.readAsDataURL(file);
+            } else {
+
+                if (geminiLoaded) {
+                    gemini25Pro(formData.get("model"), formData.get("question"));
+                }
+
             }
 
             return false; // Prevent default form submission

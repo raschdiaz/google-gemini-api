@@ -23,7 +23,7 @@ async function getModelsList() {
     document.getElementById("submit").disabled = false;
 }
 
-async function gemini25Pro(model, question) {
+async function gemini25Pro(model, question, fileBase64 = null, fileMimeType = null) {
     const API_KEY = environment.API_KEY;
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model}:generateContent`, {
         method: 'POST',
@@ -37,7 +37,13 @@ async function gemini25Pro(model, question) {
                     parts: [
                         {
                             text: question
-                        }
+                        },
+                        (fileBase64 && {
+                            inlineData: {
+                                mimeType: fileMimeType,
+                                data: fileBase64
+                            }
+                        })
                     ]
                 }
             ]
@@ -45,7 +51,11 @@ async function gemini25Pro(model, question) {
     });
     const data = await response.json();
     console.log(data);
-    document.getElementById("response").innerHTML = data.candidates[0].content.parts[0].text;
+    if (data.error) {
+        document.getElementById("response").innerHTML = "Error: " + data.error.message;
+    } else {
+        document.getElementById("response").innerHTML = data.candidates[0].content.parts[0].text;
+    }
     document.getElementById("submit").innerHTML = "Enviar";
     document.getElementById("submit").disabled = false;
 }
